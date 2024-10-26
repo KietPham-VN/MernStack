@@ -1,5 +1,7 @@
 import { Request, Response } from 'express'
+import { RegisterReqBody } from '~/models/requests/users.requests'
 import usersServices from '~/services/users.services'
+import { ParamsDictionary } from 'express-serve-static-core'
 // controllers là handler có nhiệm vụ tập kết dữ liệu từ người dùng
 // và phân phát vào các service đúng chỗ để xử lý
 
@@ -23,14 +25,21 @@ export const loginController = (req: Request, res: Response) => {
     res.status(401).json({ message: 'Invalid email or password' })
   }
 }
-export const registerController = async (req: Request, res: Response) => {
-  const { email, password } = req.body
+export const registerController = async (req: Request<ParamsDictionary, any, RegisterReqBody>, res: Response) => {
+  const { email } = req.body
   // gọi service, tạo user từ email và password, lưu user đó vào users collection của mongo
   try {
-    const result = await usersServices.register({
-      email,
-      password
-    })
+    // kiểm ra email có bị trùng không
+    const isDup = await usersServices.checkEmailexists(email)
+    if (isDup) {
+      const customError = new Error('Email has already been used')
+      //! đoạn này senior chết ngợp =))
+      Object.defineProperty(customError, 'message', {
+        enumerable: true
+      })
+      throw customError
+    }
+    const result = await usersServices.register(req.body)
     res.status(201).json({
       message: 'Register successfully',
       data: result

@@ -23,8 +23,7 @@ userRouter.post('/login', loginValidator, loginController)
     email: string,
     password: string,
     confirmPassword: string,
-    date_of_birth: string, // có cấu trúc là ISO 8601
-
+    date_of_birth: string, // có cấu trúc là ISO 8601s
   }
  */
 userRouter.post('/register', registerValidator, registerController)
