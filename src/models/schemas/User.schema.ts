@@ -6,19 +6,19 @@ enum UserVerifyStatus {
   Banned // bị khóa
 }
 enum USER_ROLE {
-  Admin, //0
-  Staff, //1
-  User //2
+  Admin, // 0
+  Staff, // 1
+  User // 2
 }
-//interface dùng để định nghĩa 1 user cần những gì khi tạo ra
+// interface dùng để định nghĩa 1 user cần những gì khi tạo ra
 interface UserType {
-  _id?: ObjectId //optional là ?
+  _id?: ObjectId // optional là ?
   name?: string
   email: string
   date_of_birth?: Date
   password: string
   created_at?: Date
-  updated_at?: Date //lúc mới tạo chưa có gì thì nên cho bằng create_at
+  updated_at?: Date // lúc mới tạo chưa có gì thì nên cho bằng create_at
   email_verify_token?: string // jwt hoặc '' nếu đã xác thực email
   forgot_password_token?: string // jwt hoặc '' nếu đã xác thực email
   verify?: UserVerifyStatus
@@ -32,8 +32,8 @@ interface UserType {
   role?: USER_ROLE //đây là dạng Enum
 }
 
-//class sẽ sử dụng các định nghĩa của interface để tạo user đầy đủ
-//thông tin thì mới gữi lên database
+// class sẽ sử dụng các định nghĩa của interface để tạo user đầy đủ
+// thông tin thì mới gữi lên database
 export default class User {
   _id?: ObjectId
   name: string
@@ -54,9 +54,9 @@ export default class User {
   cover_photo: string
   role: USER_ROLE
   constructor(user: UserType) {
-    const date = new Date() //tạo này cho ngày created_at updated_at bằng nhau
-    this._id = user._id || new ObjectId() // tự tạo id
-    this.name = user.name ?? '' // nếu người dùng tạo mà k truyền ta sẽ để rỗng
+    const date = new Date()
+    this._id = user._id || new ObjectId()
+    this.name = user.name ?? ''
     this.email = user.email
     this.date_of_birth = user.date_of_birth || date
     this.password = user.password

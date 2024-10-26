@@ -1,6 +1,6 @@
 import express from 'express'
 import { loginController, registerController } from '~/controllers/users.controllers'
-import { loginValidator } from '~/middlewares/users.middlewares'
+import { loginValidator, registerValidator } from '~/middlewares/users.middlewares'
 // dựng route
 // userRouter
 const userRouter = express.Router()
@@ -14,8 +14,18 @@ const userRouter = express.Router()
 
 // do next() không làm dừng chương trình nên ta nên có thói quen dùng return next()
 userRouter.post('/login', loginValidator, loginController)
-// http://localhost:3000/users/login
-// phát triễn tính năng đăng ký
-// http://localhost:3000/users/register
-userRouter.post('/register', registerController)
+/*
+  desc: Register a new user
+  path: /register
+  method: POST
+  body: {
+    name: string,
+    email: string,
+    password: string,
+    confirmPassword: string,
+    date_of_birth: string, // có cấu trúc là ISO 8601
+
+  }
+ */
+userRouter.post('/register', registerValidator, registerController)
 export default userRouter
