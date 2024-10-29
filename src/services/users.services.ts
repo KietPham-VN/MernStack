@@ -5,7 +5,6 @@ import { hashPassword } from '~/utils/crypto'
 
 class UsersServices {
   async checkEmailexists(email: string) {
-    // dùng email lên database tìm user sở hữu nó
     const user = await databaseService.users.findOne({ email })
     return Boolean(user)
   }

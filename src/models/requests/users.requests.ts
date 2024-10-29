@@ -1,5 +1,3 @@
-// file này lưu các định nghĩa của các request
-
 export interface RegisterReqBody {
   name: string
   email: string
