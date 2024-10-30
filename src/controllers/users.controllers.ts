@@ -1,7 +1,9 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { RegisterReqBody } from '~/models/requests/users.requests'
 import usersServices from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
+import { ErrorWithStatus } from '~/models/Errors'
+import HTTP_STATUS from '~/constants/httpStatus'
 
 export const loginController = (req: Request, res: Response) => {
   const { email, password } = req.body
@@ -19,24 +21,16 @@ export const loginController = (req: Request, res: Response) => {
 }
 export const registerController = async (req: Request<ParamsDictionary, any, RegisterReqBody>, res: Response) => {
   const { email } = req.body
-  try {
-    const isDup = await usersServices.checkEmailexists(email)
-    if (isDup) {
-      const customError = new Error('Email has already been used')
-      Object.defineProperty(customError, 'message', {
-        enumerable: true
-      })
-      throw customError
-    }
-    const result = await usersServices.register(req.body)
-    res.status(201).json({
-      message: 'Register successfully',
-      data: result
-    })
-  } catch (error) {
-    res.status(422).json({
-      message: 'Register failed',
-      error
+  const isDup = await usersServices.checkEmailexists(email)
+  if (isDup) {
+    throw new ErrorWithStatus({
+      status: HTTP_STATUS.UNPROCESSABLE_ENTITY, // 422
+      message: 'Email has already been used'
     })
   }
+  const result = await usersServices.register(req.body)
+  res.status(201).json({
+    message: 'Register successfully',
+    data: result
+  })
 }

@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { checkSchema } from 'express-validator'
+import HTTP_STATUS from '~/constants/httpStatus'
+import { ErrorWithStatus } from '~/models/Errors'
 import { validate } from '~/utils/validation'
 
 export const loginValidator = (req: Request, res: Response, next: NextFunction) => {
@@ -96,8 +98,12 @@ export const registerValidator = validate(
       },
       custom: {
         options: (value, { req }) => {
+          // cố tình tạo 1 lỗi bất thường để test
           if (value !== req.body.password) {
-            throw new Error('Confirm password does not match password')
+            throw new ErrorWithStatus({
+              status: HTTP_STATUS.UNAUTHORIZED,
+              message: 'Confirm password does not match with password'
+            })
           } else {
             return true
           }
