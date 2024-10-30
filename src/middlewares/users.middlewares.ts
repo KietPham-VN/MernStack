@@ -31,6 +31,7 @@ export const registerValidator = validate(
         errorMessage: 'Name must be between 1 and 500 characters'
       }
     },
+
     email: {
       notEmpty: {
         errorMessage: 'Email is required'
@@ -38,6 +39,7 @@ export const registerValidator = validate(
       isEmail: true,
       trim: true
     },
+
     password: {
       notEmpty: {
         errorMessage: 'Password is required'
@@ -65,6 +67,7 @@ export const registerValidator = validate(
           'Password must be at least 8 characters long and contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 symbol'
       }
     },
+
     confirm_password: {
       notEmpty: {
         errorMessage: 'Confirm password is required'
@@ -101,6 +104,7 @@ export const registerValidator = validate(
         }
       }
     },
+
     date_of_birth: {
       isISO8601: {
         options: {

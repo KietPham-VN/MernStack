@@ -1,11 +1,15 @@
 import { Collection, Db, MongoClient } from 'mongodb'
 import dotenv from 'dotenv'
 import User from '~/models/schemas/User.schema'
+
 dotenv.config()
+
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@shoppingcardprojectclus.u7dem.mongodb.net/?retryWrites=true&w=majority&appName=shoppingCardProjectCluster`
+
 class DatabaseService {
   private readonly client: MongoClient
   private readonly db: Db
+
   constructor() {
     this.client = new MongoClient(uri)
     this.db = this.client.db(process.env.DB_NAME)

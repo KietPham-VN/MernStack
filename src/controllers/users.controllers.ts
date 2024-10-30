@@ -20,11 +20,9 @@ export const loginController = (req: Request, res: Response) => {
 export const registerController = async (req: Request<ParamsDictionary, any, RegisterReqBody>, res: Response) => {
   const { email } = req.body
   try {
-    // kiểm ra email có bị trùng không
     const isDup = await usersServices.checkEmailexists(email)
     if (isDup) {
       const customError = new Error('Email has already been used')
-      //! đoạn này senior chết ngợp =))
       Object.defineProperty(customError, 'message', {
         enumerable: true
       })
