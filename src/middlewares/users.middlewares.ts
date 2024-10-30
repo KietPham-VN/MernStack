@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { checkSchema } from 'express-validator'
 import HTTP_STATUS from '~/constants/httpStatus'
+import { USERS_MESSAGES } from '~/constants/messages'
 import { ErrorWithStatus } from '~/models/Errors'
 import { validate } from '~/utils/validation'
 
@@ -8,7 +9,7 @@ export const loginValidator = (req: Request, res: Response, next: NextFunction) 
   const { email, password } = req.body
   if (!email || !password) {
     res.status(422).json({
-      message: 'missing email or password'
+      message: USERS_MESSAGES.EMAIL_OR_PASSWORD_IS_INCORRECT
     })
   } else {
     next()
@@ -19,10 +20,10 @@ export const registerValidator = validate(
   checkSchema({
     name: {
       notEmpty: {
-        errorMessage: 'Name is required'
+        errorMessage: USERS_MESSAGES.NAME_IS_REQUIRED
       },
       isString: {
-        errorMessage: 'Name must be a string'
+        errorMessage: USERS_MESSAGES.NAME_MUST_BE_A_STRING
       },
       trim: true,
       isLength: {
@@ -30,13 +31,13 @@ export const registerValidator = validate(
           min: 1,
           max: 100
         },
-        errorMessage: 'Name must be between 1 and 500 characters'
+        errorMessage: USERS_MESSAGES.NAME_LENGTH_MUST_BE_FROM_1_TO_100
       }
     },
 
     email: {
       notEmpty: {
-        errorMessage: 'Email is required'
+        errorMessage: USERS_MESSAGES.EMAIL_IS_REQUIRED
       },
       isEmail: true,
       trim: true
@@ -44,17 +45,17 @@ export const registerValidator = validate(
 
     password: {
       notEmpty: {
-        errorMessage: 'Password is required'
+        errorMessage: USERS_MESSAGES.PASSWORD_IS_REQUIRED
       },
       isString: {
-        errorMessage: 'Password must be a string'
+        errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_A_STRING
       },
       isLength: {
         options: {
           min: 8,
           max: 50
         },
-        errorMessage: 'Password must be between 8 and 50 characters'
+        errorMessage: USERS_MESSAGES.PASSWORD_LENGTH_MUST_BE_FROM_8_TO_50
       },
       isStrongPassword: {
         options: {
@@ -65,24 +66,23 @@ export const registerValidator = validate(
           minSymbols: 1
           // returnScore: true
         },
-        errorMessage:
-          'Password must be at least 8 characters long and contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 symbol'
+        errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_STRONG
       }
     },
 
     confirm_password: {
       notEmpty: {
-        errorMessage: 'Confirm password is required'
+        errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_IS_REQUIRED
       },
       isString: {
-        errorMessage: 'Confirm password must be a string'
+        errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_A_STRING
       },
       isLength: {
         options: {
           min: 8,
           max: 50
         },
-        errorMessage: 'Confirm password must be between 8 and 50 characters'
+        errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_LENGTH_MUST_BE_FROM_8_TO_50
       },
       isStrongPassword: {
         options: {
@@ -93,8 +93,7 @@ export const registerValidator = validate(
           minSymbols: 1
           // returnScore: true
         },
-        errorMessage:
-          'Confirm password must be at least 8 characters long and contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 symbol'
+        errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_STRONG
       },
       custom: {
         options: (value, { req }) => {
@@ -102,7 +101,7 @@ export const registerValidator = validate(
           if (value !== req.body.password) {
             throw new ErrorWithStatus({
               status: HTTP_STATUS.UNAUTHORIZED,
-              message: 'Confirm password does not match with password'
+              message: USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_THE_SAME_AS_PASSWORD
             })
           } else {
             return true
