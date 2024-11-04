@@ -1,10 +1,15 @@
 import User from '~/models/schemas/User.schema'
 import databaseService from './database.services'
-import { RegisterReqBody } from '~/models/requests/users.requests'
+import { LoginReqBody, RegisterReqBody } from '~/models/requests/users.requests'
 import { hashPassword } from '~/utils/crypto'
 import { TOKEN_TYPE } from '~/constants/enums'
 import { signToken } from '~/utils/jwt'
 import dotenv from 'dotenv'
+import { ErrorWithStatus } from '~/models/Errors'
+import HTTP_STATUS from '~/constants/httpStatus'
+import { USERS_MESSAGES } from '~/constants/messages'
+import RefreshToken from '~/models/schemas/RefreshToken.schema'
+import { ObjectId } from 'mongodb'
 
 dotenv.config()
 
@@ -42,8 +47,48 @@ class UsersServices {
       this.sginAccessToken(user_id),
       this.sginRefreshToken(user_id)
     ])
+    await databaseService.refresh_tokens.insertOne(
+      new RefreshToken({
+        user_id: new ObjectId(user_id),
+        token: refreshToken
+      })
+    )
+    return {
+      accessToken,
+      refreshToken
+    }
+  }
 
-    return { accessToken, refreshToken }
+  async login({ email, password }: LoginReqBody) {
+    // dung email và pass để tìm user
+    const user = await databaseService.users.findOne({
+      email,
+      password: hashPassword(password)
+    })
+    if (!user) {
+      throw new ErrorWithStatus({
+        status: HTTP_STATUS.UNPROCESSABLE_ENTITY,
+        message: USERS_MESSAGES.EMAIL_OR_PASSWORD_IS_INCORRECT
+      })
+    }
+
+    // nếu có thì tạo ac và rf cho nó
+    const user_id = user._id.toString()
+    const [accessToken, refreshToken] = await Promise.all([
+      this.sginAccessToken(user_id),
+      this.sginRefreshToken(user_id)
+    ])
+    // lưu rf vào database
+    await databaseService.refresh_tokens.insertOne(
+      new RefreshToken({
+        user_id: new ObjectId(user_id),
+        token: refreshToken
+      })
+    )
+    return {
+      accessToken,
+      refreshToken
+    }
   }
 }
 

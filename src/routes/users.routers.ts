@@ -5,8 +5,17 @@ import { wrapAsync } from '~/utils/handlers'
 
 const userRouter = express.Router()
 
-userRouter.post('/login', loginValidator, loginController)
 userRouter.post('/register', registerValidator, wrapAsync(registerController))
+/*
+desc: login
+path: /login
+method: POST
+body: {
+  email : string,
+  password: string,
+}
+*/
+userRouter.post('/login', loginValidator, wrapAsync(loginController))
 
 export default userRouter
 // hàm next nếu không có nội dung thì sẽ đi đến hàm tiếp theo
