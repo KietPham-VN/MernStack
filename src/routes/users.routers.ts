@@ -1,5 +1,5 @@
-import express, { Request, Response } from 'express'
-import { loginController, registerController } from '~/controllers/users.controllers'
+import { loginController, logoutController, registerController } from '~/controllers/users.controllers'
+import express from 'express'
 import {
   accessTokenValidator,
   loginValidator,
@@ -34,9 +34,7 @@ userRouter.post('/login', loginValidator, wrapAsync(loginController))
   }
   */
 
-userRouter.post('/logout', accessTokenValidator, refreshTokenValidator, (req: Request, res: Response) => {
-  res.json('success')
-})
+userRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapAsync(logoutController))
 export default userRouter
 
 // hàm next nếu không có nội dung thì sẽ đi đến hàm tiếp theo
@@ -44,3 +42,17 @@ export default userRouter
 //  next() xịn vì nó có thể chạy được trong cả đồng bộ và bất đồng bộ
 // nhưng tay vẫn dùng throw vì server chỉ throw thôi server nó đéo next
 // lỗi do mình tạo ra thì mới next được
+
+//! làm thêm 1 route /me
+/*
+  path: users/me
+  method: POST
+  header: {
+    Authorization: 'Bearer<access_token>'
+  }
+  lấy về tất cả thông tin người dùng mà không đưa password, role
+ */
+
+/*
+  làm thêm tính năng update bình thường thôi nhé không chơi với password
+*/

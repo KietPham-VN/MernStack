@@ -34,5 +34,6 @@ export const USERS_MESSAGES = {
   REGISTER_SUCCESS: 'Register successfully',
   ACCESS_TOKEN_IS_REQUIRED: 'Access token is required',
   REFRESH_TOKEN_IS_REQUIRED: 'Refresh token is required',
-  LOGOUT_SUCCESS: 'Logout successfully'
+  LOGOUT_SUCCESS: 'Logout successfully',
+  REFRESH_TOKEN_IS_INVALID: 'Refresh token is invalid'
 } as const

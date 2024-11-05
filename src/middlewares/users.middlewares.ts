@@ -7,6 +7,10 @@ import { ErrorWithStatus } from '~/models/Errors'
 import { verifyToken } from '~/utils/jwt'
 import { validate } from '~/utils/validation'
 import { Request } from 'express'
+import dotenv from 'dotenv'
+
+dotenv.config()
+
 export const registerValidator = validate(
   checkSchema(
     {
@@ -180,7 +184,10 @@ export const accessTokenValidator = validate(
             }
             try {
               // nếu có ac thì mình sẽ đi xác thực(check chữ ký)
-              const decode_authorization = await verifyToken({ token: accessToken })
+              const decode_authorization = await verifyToken({
+                token: accessToken,
+                privateKey: process.env.JWT_SECRET_ACCESS_TOKEN as string
+              })
               // decode_authorization là payload của access_token
               ;(req as Request).decode_authorization = decode_authorization
             } catch (error) {
@@ -211,7 +218,10 @@ export const refreshTokenValidator = validate(
           options: async (value, { req }) => {
             // value này là refresh_token
             try {
-              const decode_refresh_token = await verifyToken({ token: value })
+              const decode_refresh_token = await verifyToken({
+                token: value,
+                privateKey: process.env.JWT_SECRET_REFRESH_TOKEN as string
+              })
               ;(req as Request).decode_refresh_token = decode_refresh_token
             } catch (error) {
               throw new ErrorWithStatus({
