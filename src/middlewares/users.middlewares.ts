@@ -1,5 +1,10 @@
 import { checkSchema } from 'express-validator'
+import { JsonWebTokenError } from 'jsonwebtoken'
+import { capitalize } from 'lodash'
+import HTTP_STATUS from '~/constants/httpStatus'
 import { USERS_MESSAGES } from '~/constants/messages'
+import { ErrorWithStatus } from '~/models/Errors'
+import { verifyToken } from '~/utils/jwt'
 import { validate } from '~/utils/validation'
 
 export const registerValidator = validate(
@@ -151,5 +156,45 @@ export const loginValidator = validate(
       }
     },
     ['body']
+  )
+)
+
+// viết hàm kiểm tra accessToken
+export const accessTokenValidator = validate(
+  checkSchema(
+    {
+      Authorization: {
+        notEmpty: {
+          errorMessage: USERS_MESSAGES.ACCESS_TOKEN_IS_REQUIRED
+        },
+        custom: {
+          options: async (value, { req }) => {
+            // value này là Authorization: Bearer<access_token>
+            const accessToken = value.split(' ')[1]
+
+            if (!accessToken) {
+              throw new ErrorWithStatus({
+                status: HTTP_STATUS.UNAUTHORIZED, // 401
+                message: USERS_MESSAGES.ACCESS_TOKEN_IS_REQUIRED
+              })
+            }
+            try {
+              // nếu có ac thì mình sẽ đi xác thực(check chữ ký)
+              const decode_authorization = await verifyToken({ token: accessToken })
+              // decode_authorization là payload của access_token
+              req.decode_authorization = decode_authorization
+            } catch (error) {
+              throw new ErrorWithStatus({
+                status: HTTP_STATUS.UNAUTHORIZED, // 401
+                message: capitalize((error as JsonWebTokenError).message)
+              })
+            }
+            // nếu ok hết
+            return true
+          }
+        }
+      }
+    },
+    ['headers']
   )
 )

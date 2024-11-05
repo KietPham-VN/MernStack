@@ -23,3 +23,23 @@ export const signToken = ({
     })
   })
 }
+
+// làm hàm kiểm tra 1 token có đúng với chữ ký hay không
+// đúng thì trả ra payload trong token đó
+export const verifyToken = async ({
+  token,
+  privateKey = process.env.JWT_SECRET as string
+}: {
+  token: string
+  privateKey?: string
+}) => {
+  return new Promise<jwt.JwtPayload>((resolve, reject) => {
+    jwt.verify(token, privateKey, (error, decode) => {
+      if (error) {
+        throw reject(error)
+      } else {
+        return resolve(decode as jwt.JwtPayload)
+      }
+    })
+  })
+}

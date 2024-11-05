@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express'
+import { Request, Response } from 'express'
 import { LoginReqBody, RegisterReqBody } from '~/models/requests/users.requests'
 import usersServices from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
@@ -22,13 +22,12 @@ export const registerController = async (req: Request<ParamsDictionary, any, Reg
   })
 }
 
-export const loginController = async (
-  req: Request<ParamsDictionary, any, LoginReqBody>,
-  res: Response,
-  next: NextFunction
-) => {
+export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
   const { email, password } = req.body
-  const result = await usersServices.login({ email, password })
+  const result = await usersServices.login({
+    email,
+    password
+  })
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.LOGIN_SUCCESS,
     result // ac rf
