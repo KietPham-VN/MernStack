@@ -6,7 +6,7 @@ import { USERS_MESSAGES } from '~/constants/messages'
 import { ErrorWithStatus } from '~/models/Errors'
 import { verifyToken } from '~/utils/jwt'
 import { validate } from '~/utils/validation'
-
+import { Request } from 'express'
 export const registerValidator = validate(
   checkSchema(
     {
@@ -182,7 +182,7 @@ export const accessTokenValidator = validate(
               // nếu có ac thì mình sẽ đi xác thực(check chữ ký)
               const decode_authorization = await verifyToken({ token: accessToken })
               // decode_authorization là payload của access_token
-              req.decode_authorization = decode_authorization
+              ;(req as Request).decode_authorization = decode_authorization
             } catch (error) {
               throw new ErrorWithStatus({
                 status: HTTP_STATUS.UNAUTHORIZED, // 401
@@ -196,5 +196,34 @@ export const accessTokenValidator = validate(
       }
     },
     ['headers']
+  )
+)
+
+// viết hàm kiểm tra refreshToken
+export const refreshTokenValidator = validate(
+  checkSchema(
+    {
+      refresh_token: {
+        notEmpty: {
+          errorMessage: USERS_MESSAGES.REFRESH_TOKEN_IS_REQUIRED
+        },
+        custom: {
+          options: async (value, { req }) => {
+            // value này là refresh_token
+            try {
+              const decode_refresh_token = await verifyToken({ token: value })
+              ;(req as Request).decode_refresh_token = decode_refresh_token
+            } catch (error) {
+              throw new ErrorWithStatus({
+                status: HTTP_STATUS.UNAUTHORIZED, // 401
+                message: capitalize((error as JsonWebTokenError).message)
+              })
+            }
+            return true
+          }
+        }
+      }
+    },
+    ['body']
   )
 )

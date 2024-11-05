@@ -43,19 +43,19 @@ class UsersServices {
     )
     const user_id = result.insertedId.toString()
     // tạo ac và rf thui
-    const [accessToken, refreshToken] = await Promise.all([
+    const [access_token, refresh_tokens] = await Promise.all([
       this.sginAccessToken(user_id),
       this.sginRefreshToken(user_id)
     ])
     await databaseService.refresh_tokens.insertOne(
       new RefreshToken({
         user_id: new ObjectId(user_id),
-        token: refreshToken
+        token: access_token
       })
     )
     return {
-      accessToken,
-      refreshToken
+      access_token,
+      refresh_tokens
     }
   }
 
@@ -74,7 +74,7 @@ class UsersServices {
 
     // nếu có thì tạo ac và rf cho nó
     const user_id = user._id.toString()
-    const [accessToken, refreshToken] = await Promise.all([
+    const [access_token, refresh_token] = await Promise.all([
       this.sginAccessToken(user_id),
       this.sginRefreshToken(user_id)
     ])
@@ -82,12 +82,12 @@ class UsersServices {
     await databaseService.refresh_tokens.insertOne(
       new RefreshToken({
         user_id: new ObjectId(user_id),
-        token: refreshToken
+        token: refresh_token
       })
     )
     return {
-      accessToken,
-      refreshToken
+      access_token,
+      refresh_token
     }
   }
 }

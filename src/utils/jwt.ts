@@ -1,6 +1,7 @@
 // file này lưu hàm dùng để tạo ra token
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
+import { TokenPayload } from '~/models/requests/users.requests'
 
 dotenv.config()
 
@@ -33,12 +34,12 @@ export const verifyToken = async ({
   token: string
   privateKey?: string
 }) => {
-  return new Promise<jwt.JwtPayload>((resolve, reject) => {
+  return new Promise<TokenPayload>((resolve, reject) => {
     jwt.verify(token, privateKey, (error, decode) => {
       if (error) {
         throw reject(error)
       } else {
-        return resolve(decode as jwt.JwtPayload)
+        return resolve(decode as TokenPayload)
       }
     })
   })

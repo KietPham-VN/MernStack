@@ -1,6 +1,11 @@
 import express, { Request, Response } from 'express'
 import { loginController, registerController } from '~/controllers/users.controllers'
-import { accessTokenValidator, loginValidator, registerValidator } from '~/middlewares/users.middlewares'
+import {
+  accessTokenValidator,
+  loginValidator,
+  refreshTokenValidator,
+  registerValidator
+} from '~/middlewares/users.middlewares'
 import { wrapAsync } from '~/utils/handlers'
 
 const userRouter = express.Router()
@@ -29,7 +34,7 @@ userRouter.post('/login', loginValidator, wrapAsync(loginController))
   }
   */
 
-userRouter.post('/logout', accessTokenValidator, (req: Request, res: Response) => {
+userRouter.post('/logout', accessTokenValidator, refreshTokenValidator, (req: Request, res: Response) => {
   res.json('success')
 })
 export default userRouter
