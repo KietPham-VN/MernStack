@@ -11,6 +11,7 @@ databaseService.connect()
 app.use(express.json())
 app.use('/users', userRouter)
 app.use(defaultErrorHandler)
+
 app.listen(PORT, () => {
   console.log(`server backend is currently listening at PORT ${PORT}`)
 })
