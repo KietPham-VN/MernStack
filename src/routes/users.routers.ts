@@ -95,7 +95,7 @@ export default userRouter
 // nhưng tay vẫn dùng throw vì server chỉ throw thôi server nó đéo next
 // lỗi do mình tạo ra thì mới next được
 
-//! làm thêm 1 route /me
+//! làm thêm 1 route /mes
 /*
   path: users/me
   method: POST
