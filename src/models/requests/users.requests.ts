@@ -1,6 +1,7 @@
 import { JwtPayload } from 'jsonwebtoken'
 import { TOKEN_TYPE } from '~/constants/enums'
 import { ParsedQs } from 'qs'
+
 export interface RegisterReqBody {
   name: string
   email: string
@@ -26,3 +27,25 @@ export interface LogoutReqBody {
 export interface VerifyEmailReqQuery extends ParsedQs {
   email_verify_token: string
 }
+
+export interface VerifyForgotPasswordTokenReqBody {
+  forgot_password_token: string
+}
+
+export interface ResetPasswordReqBody {
+  password: string
+  confirm_password: string
+  forgot_password_token: string
+}
+
+export interface UpdateMeReqBody {
+  name?: string
+  date_of_birth?: string
+  bio?: string // optional
+  location?: string // optional
+  website?: string // optional
+  username?: string // optional
+  avatar?: string // optional
+  cover_photo?: string // optional}
+}
+

@@ -1,19 +1,26 @@
 import {
   forgotPasswordController,
+  getMeController,
   loginController,
   logoutController,
   registerController,
   resendVerifyEmailController,
-  verifyEmailTokenController
+  resetPasswordController,
+  updateMeController,
+  verifyEmailTokenController,
+  VerifyForgotPasswordTokenController
 } from '~/controllers/users.controllers'
 import express from 'express'
 import {
   accessTokenValidator,
   emailVerifyTokenValidator,
+  forgotPasswordTokenValidator,
   forgotPasswordValidator,
   loginValidator,
   refreshTokenValidator,
-  registerValidator
+  registerValidator,
+  resetPasswordValidator,
+  updateMeValidator
 } from '~/middlewares/users.middlewares'
 import { wrapAsync } from '~/utils/handlers'
 
@@ -87,24 +94,83 @@ userRouter.post(
   forgotPasswordValidator, //
   wrapAsync(forgotPasswordController)
 )
-export default userRouter
 
 // hàm next nếu không có nội dung thì sẽ đi đến hàm tiếp theo
 // còn nếu có nội dung thì sẽ bay thẳng xuống errorHandler
 //  next() xịn vì nó có thể chạy được trong cả đồng bộ và bất đồng bộ
 // nhưng tay vẫn dùng throw vì server chỉ throw thôi server nó đéo next
 // lỗi do mình tạo ra thì mới next được
-
-//! làm thêm 1 route /mes
 /*
-  path: users/me
+des: verify forgot password token
+kiểm tra token có còn hiệu lực không
+path: 'users/verify-forgot-password'
+method: POST
+body: {
+  forgot_password_token: string
+}
+*/
+userRouter.post(
+  '/verify-forgot-password',
+  forgotPasswordTokenValidator, // kiểm tra token
+  wrapAsync(VerifyForgotPasswordTokenController) // xử lý logic
+)
+/*
+  rest password
+  path: 'users/reset-password'
   method: POST
-  header: {
-    Authorization: 'Bearer<access_token>'
+  body: {
+    forgot_password_token: string
+    password: string
+    confirm_password: string
   }
-  lấy về tất cả thông tin người dùng mà không đưa password, role
- */
+*/
+userRouter.post(
+  '/reset-password',
+  forgotPasswordTokenValidator, // kiểm tra token
+  resetPasswordValidator, // kiểm tra password, confirm_password
+  wrapAsync(resetPasswordController) // xử lý logic cập nhật reset
+)
+
+//! làm thêm 1 route /me
+/*
+des: get profile của user
+path: '/me'
+method: post
+Header: {
+  Authorization: Bearer<access_token>
+}
+
+*/
+userRouter.post(
+  '/me',
+  accessTokenValidator, //
+  wrapAsync(getMeController)
+)
+
+/*
+des: update profile của user
+path: '/me'
+method: patch
+Header: {Authorization: Bearer <access_token>}
+body: {
+  name?: string
+  date_of_birth?: Date
+  bio?: string // optional
+  location?: string // optional
+  website?: string // optional
+  username?: string // optional
+  avatar?: string // optional
+  cover_photo?: string // optional}
+  */
+userRouter.patch(
+  '/me',
+  accessTokenValidator, // kiểm tra access_token và biết ai muốn cập nhật
+  updateMeValidator, // kiểm tra các trường dữ liệu mà người dùng muốn cập nhật có hợp lệ không?
+  wrapAsync(updateMeController) // tiến hành cập nhật
+)
 
 /*
   làm thêm tính năng update bình thường thôi nhé không chơi với password
-*/
+  */
+
+export default userRouter

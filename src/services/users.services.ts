@@ -1,8 +1,8 @@
 import User from '~/models/schemas/User.schema'
 import databaseService from './database.services'
-import { LoginReqBody, RegisterReqBody } from '~/models/requests/users.requests'
+import { LoginReqBody, RegisterReqBody, UpdateMeReqBody } from '~/models/requests/users.requests'
 import { hashPassword } from '~/utils/crypto'
-import { TOKEN_TYPE, UserVerifyStatus } from '~/constants/enums'
+import { TOKEN_TYPE, USER_VERIFY_STATUS } from '~/constants/enums'
 import { signToken } from '~/utils/jwt'
 import dotenv from 'dotenv'
 import { ErrorWithStatus } from '~/models/Errors'
@@ -81,6 +81,38 @@ class UsersServices {
       throw new ErrorWithStatus({
         status: HTTP_STATUS.NOT_FOUND, // 404
         message: USERS_MESSAGES.USER_NOT_FOUND
+      })
+    }
+    return user
+  }
+
+  async checkForgotPasswordToken({
+    user_id,
+    forgot_password_token
+  }: {
+    user_id: string
+    forgot_password_token: string
+  }) {
+    const user = await databaseService.users.findOne({
+      _id: new ObjectId(user_id),
+      forgot_password_token
+    })
+    // với 2 thông tin mà không có user thì
+    if (!user) {
+      throw new ErrorWithStatus({
+        status: HTTP_STATUS.UNAUTHORIZED, // 404
+        message: USERS_MESSAGES.FORGOT_PASSWORD_TOKEN_IS_INVALID
+      })
+    }
+    return user
+  }
+
+  async checkEmailVerified(user_id: string) {
+    const user = await databaseService.users.findOne({ _id: new ObjectId(user_id), verify: USER_VERIFY_STATUS.Verified })
+    if (!user || user.verify !== USER_VERIFY_STATUS.Verified) {
+      throw new ErrorWithStatus({
+        status: HTTP_STATUS.FORBBIDEN, // 403
+        message: USERS_MESSAGES.USER_NOT_VERIFIED
       })
     }
     return user
@@ -172,7 +204,7 @@ class UsersServices {
       [
         {
           $set: {
-            verify: UserVerifyStatus.Verified,
+            verify: USER_VERIFY_STATUS.Verified,
             email_verify_token: '',
             updated_at: '$$NOW'
           }
@@ -235,6 +267,83 @@ class UsersServices {
       Bấm vô đây để đổi mật khẩu:
       http://localhost:8000/reset-password/?forgot_password_token=${forgot_password_token}
     `)
+  }
+
+  async resetPassword({ user_id, password }: {user_id: string; password: string}) {
+    await databaseService.users.updateOne(
+      { _id: new ObjectId(user_id) }, //
+      [
+        {
+          $set: {
+            password: hashPassword(password),
+            forgot_password_token: '',
+            updated_at: '$$NOW'
+          }
+        }
+      ]
+    )
+  }
+
+  async getMe(user_id: string) {
+    const userInfor = await databaseService.users.findOne(
+      { _id: new ObjectId(user_id) },
+      {
+        projection: {
+          //cái nào muốn giấu đi thì để số 0 vào
+          password: 0,
+          email_verify_token: 0,
+          forgot_password_token: 0
+        }
+      }
+    )
+    return userInfor // sẽ k có những thuộc tính nêu trên, tránh bị lộ thông tin
+  }
+
+  async updateMe({
+    user_id,
+    payload
+  }: {
+    user_id: string //
+    payload: UpdateMeReqBody
+    // payload là những gì người dùng muốn update
+  }) {
+    //trong payload có 2 trường dữ liệu cần phải xử lý
+    // date_of_birth
+    const _payload = payload.date_of_birth
+    ? { ...payload, date_of_birth: new Date(payload.date_of_birth) }
+    : payload
+    //username
+    if (_payload.username) {
+      //nếu có thì tìm xem có ai giống không
+      const user = await databaseService.users.findOne({ username: _payload.username })
+      if (user) {
+        throw new ErrorWithStatus({
+          status: HTTP_STATUS.UNPROCESSABLE_ENTITY, // 422
+          message: USERS_MESSAGES.USERNAME_ALREADY_EXISTS
+        })
+      }
+    }
+    //nếu username truyền lên mà không có người dùng thì tiến hành cập nhật
+    const userInfor = await databaseService.users.findOneAndUpdate(
+      { _id: new ObjectId(user_id) }, //
+      [
+        {
+          $set: {
+            ..._payload, // cái mà người dùng muốn cập nhật nằm trong này nè
+            updated_at: '$$NOW'
+          }
+        }
+      ],
+      {
+        returnDocument: 'after',
+        projection: {
+          password: 0,
+          email_verify_token: 0,
+          forgot_password_token: 0
+        }
+      }
+    )
+    return userInfor
   }
 }
 
