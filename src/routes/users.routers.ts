@@ -1,3 +1,4 @@
+import { UpdateMeReqBody } from './../models/requests/users.requests'
 import {
   forgotPasswordController,
   getMeController,
@@ -23,6 +24,7 @@ import {
   updateMeValidator
 } from '~/middlewares/users.middlewares'
 import { wrapAsync } from '~/utils/handlers'
+import { filterMiddleware } from '~/middlewares/common.middlewares'
 
 const userRouter = express.Router()
 
@@ -164,6 +166,17 @@ body: {
   */
 userRouter.patch(
   '/me',
+  // cần 1 cái hàm để sàn lọc req.body
+  filterMiddleware<UpdateMeReqBody>([
+    'name',
+    'date_of_birth',
+    'bio',
+    'location',
+    'website',
+    'avatar',
+    'username',
+    'cover_photo'
+  ]),
   accessTokenValidator, // kiểm tra access_token và biết ai muốn cập nhật
   updateMeValidator, // kiểm tra các trường dữ liệu mà người dùng muốn cập nhật có hợp lệ không?
   wrapAsync(updateMeController) // tiến hành cập nhật

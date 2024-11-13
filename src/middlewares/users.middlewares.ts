@@ -8,6 +8,7 @@ import { verifyToken } from '~/utils/jwt'
 import { validate } from '~/utils/validation'
 import { Request } from 'express'
 import dotenv from 'dotenv'
+import { REGEX_USERNAME } from '~/constants/regex'
 
 dotenv.config()
 
@@ -41,40 +42,39 @@ const passwordSchema: ParamSchema = {
 }
 
 const confirmPasswordSchema: ParamSchema = {
-  
-    notEmpty: {
-      errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_IS_REQUIRED
+  notEmpty: {
+    errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_IS_REQUIRED
+  },
+  isString: {
+    errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_A_STRING
+  },
+  isLength: {
+    options: {
+      min: 8,
+      max: 50
     },
-    isString: {
-      errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_A_STRING
+    errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_LENGTH_MUST_BE_FROM_8_TO_50
+  },
+  isStrongPassword: {
+    options: {
+      minLength: 8,
+      minLowercase: 1,
+      minUppercase: 1,
+      minNumbers: 1,
+      minSymbols: 1
+      // returnScore: true
     },
-    isLength: {
-      options: {
-        min: 8,
-        max: 50
-      },
-      errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_LENGTH_MUST_BE_FROM_8_TO_50
-    },
-    isStrongPassword: {
-      options: {
-        minLength: 8,
-        minLowercase: 1,
-        minUppercase: 1,
-        minNumbers: 1,
-        minSymbols: 1
-        // returnScore: true
-      },
-      errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_STRONG
-    },
-    custom: {
-      options: (value, { req }) => {
-        // cố tình tạo 1 lỗi bất thường để test
-        if (value !== req.body.password) {
-          throw new Error(USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_THE_SAME_AS_PASSWORD)
-        }
-        return true
+    errorMessage: USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_STRONG
+  },
+  custom: {
+    options: (value, { req }) => {
+      // cố tình tạo 1 lỗi bất thường để test
+      if (value !== req.body.password) {
+        throw new Error(USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_THE_SAME_AS_PASSWORD)
       }
+      return true
     }
+  }
 }
 
 const forgotPasswordTokenSchema: ParamSchema = {
@@ -326,7 +326,6 @@ export const resetPasswordValidator = validate(
   checkSchema({
     password: passwordSchema,
     confirm_password: confirmPasswordSchema
-
   })
 )
 
@@ -400,6 +399,14 @@ export const updateMeValidator = validate(
             max: 50
           },
           errorMessage: USERS_MESSAGES.USERNAME_LENGTH_MUST_BE_LESS_THAN_50 //messages.ts thêm USERNAME_LENGTH_MUST_BE_LESS_THAN_50: 'Username length must be less than 50'
+        },
+        custom: {
+          options: (value: string, { req }) => {
+            if (!REGEX_USERNAME.test(value)) {
+              throw new Error(USERS_MESSAGES.USERNAME_IS_INVALID)
+            }
+            return true
+          }
         }
       },
       avatar: imageSchema,
@@ -408,4 +415,3 @@ export const updateMeValidator = validate(
     ['body']
   )
 )
-
