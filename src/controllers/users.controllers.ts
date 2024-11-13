@@ -12,17 +12,15 @@ import {
   VerifyEmailReqQuery,
   UpdateMeReqBody,
   VerifyForgotPasswordTokenReqBody,
-  ResetPasswordReqBody
+  ResetPasswordReqBody,
+  ChangePasswordReqBody
 } from '~/models/requests/users.requests'
 import usersServices from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
 
 dotenv.config()
 
-export const registerController = async (
-  req: Request<ParamsDictionary, any, RegisterReqBody>,
-  res: Response
-) => {
+export const registerController = async (req: Request<ParamsDictionary, any, RegisterReqBody>, res: Response) => {
   const { email } = req.body
   // gọi service, tạo user từ email và password, lưu user đó vào users collection của mongo
 
@@ -41,10 +39,7 @@ export const registerController = async (
   })
 }
 
-export const loginController = async (
-  req: Request<ParamsDictionary, any, LoginReqBody>,
-  res: Response
-) => {
+export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
   //cần lấy email cà password để tìm xem user nào đang sở hữu
   //nếu ko có thì user nào ngừng cuộc chơi
   //nếu có thì tạo at ref
@@ -56,10 +51,7 @@ export const loginController = async (
   })
 }
 
-export const logoutController = async (
-  req: Request<ParamsDictionary, any, LogoutReqBody>,
-  res: Response
-) => {
+export const logoutController = async (req: Request<ParamsDictionary, any, LogoutReqBody>, res: Response) => {
   //xem thử user_id trong payload của refresh_token có giống không
   const { refresh_token } = req.body
   const { user_id: user_id_at } = req.decode_authorization as TokenPayload
@@ -110,10 +102,7 @@ export const verifyEmailTokenController = async (
   }
 }
 
-export const resendVerifyEmailController = async (
-  req: Request<ParamsDictionary, any, any>,
-  res: Response
-) => {
+export const resendVerifyEmailController = async (req: Request<ParamsDictionary, any, any>, res: Response) => {
   // dùng user_id để tìm user đó kiểm tra user đó có verify hay là bị banned không
   const { user_id } = req.decode_authorization as TokenPayload
   const user = await usersServices.findUserById(user_id)
@@ -142,10 +131,7 @@ export const resendVerifyEmailController = async (
   // nếu không thì resend email
 }
 
-export const forgotPasswordController = async (
-  req: Request<ParamsDictionary, any, any>,
-  res: Response
-) => {
+export const forgotPasswordController = async (req: Request<ParamsDictionary, any, any>, res: Response) => {
   const { email } = req.body
   const hasUser = await usersServices.checkEmailExists(email)
   if (!hasUser) {
@@ -209,10 +195,7 @@ export const getMeController = async (
   })
 }
 
-export const updateMeController = async (
-  req: Request<ParamsDictionary, any, UpdateMeReqBody>,
-  res: Response
-) => {
+export const updateMeController = async (req: Request<ParamsDictionary, any, UpdateMeReqBody>, res: Response) => {
   // người dùng gửi access_token để mình biết họ là ai
   const { user_id } = req.decode_authorization as TokenPayload
   const payload = req.body
@@ -220,9 +203,27 @@ export const updateMeController = async (
   await usersServices.checkEmailVerified(user_id)
   // nếu hàm trên được gọi rồi mà không có gì xảy ra thì tức là user đã verify
   // thì mình tiến hành cập nhật
-  const userInfor = await usersServices.updateMe({user_id, payload})
+  const userInfor = await usersServices.updateMe({ user_id, payload })
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.UPDATE_PROFILE_SUCCESS,
     userInfor
+  })
+}
+
+export const changePasswordController = async (
+  req: Request<ParamsDictionary, any, ChangePasswordReqBody>,
+  res: Response
+) => {
+  const { user_id } = req.decode_authorization as TokenPayload
+  const { old_password, password } = req.body
+  // kiểm tra xem old_password có đúng với password có trong database không trong db không
+  await usersServices.changePassword({
+    user_id,
+    old_password,
+    password
+  })
+  // nếu đổi thành công thì
+  res.status(HTTP_STATUS.OK).json({
+    message: USERS_MESSAGES.CHANGE_PASSWORD_SUCCESS
   })
 }

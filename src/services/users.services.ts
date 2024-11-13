@@ -347,6 +347,41 @@ class UsersServices {
     )
     return userInfor
   }
+
+  async changePassword({
+    user_id,
+    old_password, //
+    password
+  }: {
+    user_id: string
+    old_password: string
+    password: string
+  }) {
+    // tìm user cái đã
+    const user = await databaseService.users.findOne({
+      _id: new ObjectId(user_id), //
+      password: hashPassword(old_password)
+    })
+    // nếu tìm không ra thì tk này không phải chủ account
+    if (!user) {
+      throw new ErrorWithStatus({
+        status: HTTP_STATUS.NOT_FOUND,
+        message: USERS_MESSAGES.USER_NOT_FOUND
+      })
+    }
+    // cập nhật
+    await databaseService.users.updateOne(
+      { _id: new ObjectId(user_id) }, //
+      [
+        {
+          $set: {
+            password: hashPassword(password),
+            updated_at: '$$NOW'
+          }
+        }
+      ]
+    )
+  }
 }
 
 const usersServices = new UsersServices()

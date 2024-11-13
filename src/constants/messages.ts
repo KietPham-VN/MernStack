@@ -64,5 +64,6 @@ export const USERS_MESSAGES = {
   EMAIL_HAS_BEEN_UNVERIFYED: 'Email has been unverified',
   USERNAME_ALREADY_EXISTS: 'Username already exists',
   UPDATE_PROFILE_SUCCESS: 'Profile updating successfully',
-  USER_NOT_VERIFIED: 'User not verified'
+  USER_NOT_VERIFIED: 'User not verified',
+  CHANGE_PASSWORD_SUCCESS: 'Change password successfully'
 } as const

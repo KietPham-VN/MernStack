@@ -337,11 +337,13 @@ export const updateMeValidator = validate(
         ...nameSchema, // phân rã nameSchema ra
         notEmpty: undefined // ghi đè lên notEmpty của nameSchema
       },
+
       date_of_birth: {
         optional: true, //đc phép có hoặc k
         ...dateOfBirthSchema, //phân rã nameSchema ra
         notEmpty: undefined //ghi đè lên notEmpty của nameSchema
       },
+
       bio: {
         optional: true,
         isString: {
@@ -356,6 +358,7 @@ export const updateMeValidator = validate(
           errorMessage: USERS_MESSAGES.BIO_LENGTH_MUST_BE_LESS_THAN_200 //messages.ts thêm BIO_LENGTH_MUST_BE_LESS_THAN_200: 'Bio length must be less than 200'
         }
       },
+
       //giống bio
       location: {
         optional: true,
@@ -371,6 +374,7 @@ export const updateMeValidator = validate(
           errorMessage: USERS_MESSAGES.LOCATION_LENGTH_MUST_BE_LESS_THAN_200 //messages.ts thêm LOCATION_LENGTH_MUST_BE_LESS_THAN_200: 'Location length must be less than 200'
         }
       },
+
       //giống location
       website: {
         optional: true,
@@ -383,10 +387,10 @@ export const updateMeValidator = validate(
             min: 1,
             max: 200
           },
-
           errorMessage: USERS_MESSAGES.WEBSITE_LENGTH_MUST_BE_LESS_THAN_200 //messages.ts thêm WEBSITE_LENGTH_MUST_BE_LESS_THAN_200: 'Website length must be less than 200'
         }
       },
+
       username: {
         optional: true,
         isString: {
@@ -411,6 +415,17 @@ export const updateMeValidator = validate(
       },
       avatar: imageSchema,
       cover_photo: imageSchema
+    },
+    ['body']
+  )
+)
+
+export const changePasswordValidator = validate(
+  checkSchema(
+    {
+      old_password: passwordSchema,
+      password: passwordSchema,
+      confirm_password: confirmPasswordSchema
     },
     ['body']
   )

@@ -1,5 +1,6 @@
 import { UpdateMeReqBody } from './../models/requests/users.requests'
 import {
+  changePasswordController,
   forgotPasswordController,
   getMeController,
   loginController,
@@ -14,6 +15,7 @@ import {
 import express from 'express'
 import {
   accessTokenValidator,
+  changePasswordValidator,
   emailVerifyTokenValidator,
   forgotPasswordTokenValidator,
   forgotPasswordValidator,
@@ -182,8 +184,23 @@ userRouter.patch(
   wrapAsync(updateMeController) // tiến hành cập nhật
 )
 
-/*
-  làm thêm tính năng update bình thường thôi nhé không chơi với password
-  */
-
+/* desc: change password
+đổi mật khẩu
+path: '/change-password'
+method put
+header: {
+  Authorization: 'Bearer<access_token>'
+}
+body {
+  old_password: string
+  password: string
+  confirm_password: string
+}
+*/
+userRouter.put(
+  '/change-password',
+  accessTokenValidator,
+  changePasswordValidator,
+  wrapAsync(changePasswordController)
+)
 export default userRouter

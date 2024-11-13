@@ -49,3 +49,8 @@ export interface UpdateMeReqBody {
   cover_photo?: string // optional}
 }
 
+export interface ChangePasswordReqBody {
+  old_password: string
+  password: string
+  confirm_password: string
+}
