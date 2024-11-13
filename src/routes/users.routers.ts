@@ -5,6 +5,7 @@ import {
   getMeController,
   loginController,
   logoutController,
+  refreshTokenController,
   registerController,
   resendVerifyEmailController,
   resetPasswordController,
@@ -203,4 +204,16 @@ userRouter.put(
   changePasswordValidator,
   wrapAsync(changePasswordController)
 )
+
+/*
+desc: refresh-token
+dùng chức năng này khi ac hết hạn, cần lấy về ac mới cùng với quà tặng kèm là rf mới
+path: '/refresh-token'
+method: POST
+body: {
+  refresh_token: string
+}
+*/
+userRouter.post('/refresh-token', refreshTokenValidator, wrapAsync(refreshTokenController))
+
 export default userRouter

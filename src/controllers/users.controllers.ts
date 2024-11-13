@@ -13,7 +13,8 @@ import {
   UpdateMeReqBody,
   VerifyForgotPasswordTokenReqBody,
   ResetPasswordReqBody,
-  ChangePasswordReqBody
+  ChangePasswordReqBody,
+  RefreshTokenReqBody
 } from '~/models/requests/users.requests'
 import usersServices from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
@@ -225,5 +226,21 @@ export const changePasswordController = async (
   // nếu đổi thành công thì
   res.status(HTTP_STATUS.OK).json({
     message: USERS_MESSAGES.CHANGE_PASSWORD_SUCCESS
+  })
+}
+
+export const refreshTokenController = async (
+  req: Request<ParamsDictionary, any, RefreshTokenReqBody>,
+  res: Response
+) => {
+  const { refresh_token } = req.body
+  const { user_id } = req.decode_refresh_token as TokenPayload
+  await usersServices.checkRefreshToken({user_id, refresh_token})
+  // nếu rf còn hiệu lực thì tiến hành refresh cho người dùng
+  await usersServices.refreshToken({user_id, refresh_token})
+  const result = await usersServices.refreshToken({user_id, refresh_token})
+  res.status(HTTP_STATUS.OK).json({
+    message: USERS_MESSAGES.REFRESH_TOKEN_SUCCESS,
+    result
   })
 }

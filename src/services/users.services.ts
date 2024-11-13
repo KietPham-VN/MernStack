@@ -22,11 +22,11 @@ class UsersServices {
     })
   }
 
-  private signRefreshToken(user_id: string) {
+  private signRefreshToken(user_id: string, expiresIn?: string) {
     return signToken({
       payload: { user_id, token_type: TOKEN_TYPE.RefreshToken },
       privateKey: process.env.JWT_SECRET_REFRESH_TOKEN as string,
-      options: { expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN }
+      options: { expiresIn: expiresIn ?? process.env.REFRESH_TOKEN_EXPIRES_IN }
     })
   }
 
@@ -381,6 +381,34 @@ class UsersServices {
         }
       ]
     )
+  }
+
+  async refreshToken({
+    user_id,
+    refresh_token //
+  }: {
+    user_id: string
+    refresh_token: string
+  }) {
+    // làm sao để lấy expiresIn trong rf cũ
+    const [access_token, new_refresh_token] = await Promise.all([
+      this.signAccessToken(user_id),
+      this.signRefreshToken(user_id)
+    ])
+    // lưu rf mới vào database
+    await databaseService.refresh_tokens.insertOne(
+      new RefreshToken({
+        token: new_refresh_token,
+        user_id: new ObjectId(user_id)
+      })
+    )
+    // xóa rf cũ ra khỏi database
+    await databaseService.refresh_tokens.deleteOne({ token: refresh_token })
+    // gửi cặp mã mới cho người dùng
+    return {
+      access_token,
+      refresh_token: new_refresh_token
+    }
   }
 }
 
