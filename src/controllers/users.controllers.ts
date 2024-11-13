@@ -130,7 +130,7 @@ export const resendVerifyEmailController = async (
     })
   } else if (user.verify == USER_VERIFY_STATUS.Banned) {
     throw new ErrorWithStatus({
-      status: HTTP_STATUS.FORBBIDEN,
+      status: HTTP_STATUS.FORBIDDEN,
       message: USERS_MESSAGES.EMAIL_HAS_BEEN_BANNED
     })
   } else {
@@ -226,5 +226,3 @@ export const updateMeController = async (
     userInfor
   })
 }
-
-

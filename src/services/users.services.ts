@@ -108,10 +108,13 @@ class UsersServices {
   }
 
   async checkEmailVerified(user_id: string) {
-    const user = await databaseService.users.findOne({ _id: new ObjectId(user_id), verify: USER_VERIFY_STATUS.Verified })
+    const user = await databaseService.users.findOne({
+      _id: new ObjectId(user_id),
+      verify: USER_VERIFY_STATUS.Verified
+    })
     if (!user || user.verify !== USER_VERIFY_STATUS.Verified) {
       throw new ErrorWithStatus({
-        status: HTTP_STATUS.FORBBIDEN, // 403
+        status: HTTP_STATUS.FORBIDDEN, // 403
         message: USERS_MESSAGES.USER_NOT_VERIFIED
       })
     }
@@ -137,6 +140,7 @@ class UsersServices {
     await databaseService.users.insertOne(
       new User({
         _id: user_id,
+        username: `user${user_id.toString()}`,
         email_verify_token,
         ...payLoad,
         password: hashPassword(payLoad.password),
@@ -269,7 +273,7 @@ class UsersServices {
     `)
   }
 
-  async resetPassword({ user_id, password }: {user_id: string; password: string}) {
+  async resetPassword({ user_id, password }: { user_id: string; password: string }) {
     await databaseService.users.updateOne(
       { _id: new ObjectId(user_id) }, //
       [
@@ -309,9 +313,7 @@ class UsersServices {
   }) {
     //trong payload có 2 trường dữ liệu cần phải xử lý
     // date_of_birth
-    const _payload = payload.date_of_birth
-    ? { ...payload, date_of_birth: new Date(payload.date_of_birth) }
-    : payload
+    const _payload = payload.date_of_birth ? { ...payload, date_of_birth: new Date(payload.date_of_birth) } : payload
     //username
     if (_payload.username) {
       //nếu có thì tìm xem có ai giống không
