@@ -234,7 +234,7 @@ export const refreshTokenController = async (
   res: Response
 ) => {
   const { refresh_token } = req.body
-  const { user_id } = req.decode_refresh_token as TokenPayload
+  const { user_id  } = req.decode_refresh_token as TokenPayload
   await usersServices.checkRefreshToken({user_id, refresh_token})
   // nếu rf còn hiệu lực thì tiến hành refresh cho người dùng
   await usersServices.refreshToken({user_id, refresh_token})

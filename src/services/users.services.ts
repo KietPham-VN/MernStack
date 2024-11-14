@@ -1,6 +1,6 @@
 import User from '~/models/schemas/User.schema'
 import databaseService from './database.services'
-import { LoginReqBody, RegisterReqBody, UpdateMeReqBody } from '~/models/requests/users.requests'
+import { LoginReqBody, RegisterReqBody, TokenPayload, UpdateMeReqBody } from '~/models/requests/users.requests'
 import { hashPassword } from '~/utils/crypto'
 import { TOKEN_TYPE, USER_VERIFY_STATUS } from '~/constants/enums'
 import { signToken } from '~/utils/jwt'
@@ -10,7 +10,7 @@ import HTTP_STATUS from '~/constants/httpStatus'
 import { USERS_MESSAGES } from '~/constants/messages'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import { ObjectId } from 'mongodb'
-
+import jwt from 'jsonwebtoken'
 dotenv.config()
 
 class UsersServices {
@@ -26,7 +26,7 @@ class UsersServices {
     return signToken({
       payload: { user_id, token_type: TOKEN_TYPE.RefreshToken },
       privateKey: process.env.JWT_SECRET_REFRESH_TOKEN as string,
-      options: { expiresIn: expiresIn ?? process.env.REFRESH_TOKEN_EXPIRES_IN }
+      options: { expiresIn: expiresIn || process.env.REFRESH_TOKEN_EXPIRES_IN }
     })
   }
 
@@ -390,10 +390,14 @@ class UsersServices {
     user_id: string
     refresh_token: string
   }) {
-    // làm sao để lấy expiresIn trong rf cũ
+    const decodedRefreshToken = jwt.decode(refresh_token) as TokenPayload
+    const currentTime = Math.floor(Date.now() / 1000)
+    const remainingTime = decodedRefreshToken?.exp ? decodedRefreshToken.exp - currentTime : undefined
+    console.log(decodedRefreshToken.exp)
+
     const [access_token, new_refresh_token] = await Promise.all([
       this.signAccessToken(user_id),
-      this.signRefreshToken(user_id)
+      this.signRefreshToken(user_id, `${remainingTime}s`) // dùng thời gian còn lại
     ])
     // lưu rf mới vào database
     await databaseService.refresh_tokens.insertOne(
