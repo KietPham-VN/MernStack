@@ -26,7 +26,7 @@ class UsersServices {
     return signToken({
       payload: { user_id, token_type: TOKEN_TYPE.RefreshToken },
       privateKey: process.env.JWT_SECRET_REFRESH_TOKEN as string,
-      options: { expiresIn: expiresIn || process.env.REFRESH_TOKEN_EXPIRES_IN }
+      options: { expiresIn: expiresIn ?? process.env.REFRESH_TOKEN_EXPIRES_IN }
     })
   }
 
@@ -393,7 +393,6 @@ class UsersServices {
     const decodedRefreshToken = jwt.decode(refresh_token) as TokenPayload
     const currentTime = Math.floor(Date.now() / 1000)
     const remainingTime = decodedRefreshToken?.exp ? decodedRefreshToken.exp - currentTime : undefined
-    console.log(decodedRefreshToken.exp)
 
     const [access_token, new_refresh_token] = await Promise.all([
       this.signAccessToken(user_id),
