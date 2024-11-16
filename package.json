@@ -42,6 +42,7 @@
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "mongodb": "^6.10.0",
+    "sharp": "^0.33.5",
     "shoppingcartbe": "file:"
   }
 }
