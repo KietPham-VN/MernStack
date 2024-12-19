@@ -5,6 +5,7 @@ import { defaultErrorHandler } from './middlewares/error.middlewares'
 import mediaRouter from './routes/medias.routers'
 import { initFolder } from './utils/file'
 import staticRouter from './routes/static.routers'
+import brandsRouter from './routes/brand.routers'
 
 const app = express()
 const PORT = 3000
@@ -15,6 +16,7 @@ app.use(express.json())
 app.use('/users', userRouter)
 app.use('/medias', mediaRouter)
 app.use('/static', staticRouter)
+app.use('/brands', brandsRouter)
 app.use(defaultErrorHandler)
 
 app.listen(PORT, () => {

@@ -21,3 +21,8 @@ export enum MEDIA_TYPE {
   Image,
   Video
 }
+
+export enum PRODUCT_STATUS {
+  Active,
+  Stock
+}

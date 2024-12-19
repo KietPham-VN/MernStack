@@ -2,7 +2,7 @@ import User from '~/models/schemas/User.schema'
 import databaseService from './database.services'
 import { LoginReqBody, RegisterReqBody, TokenPayload, UpdateMeReqBody } from '~/models/requests/users.requests'
 import { hashPassword } from '~/utils/crypto'
-import { TOKEN_TYPE, USER_VERIFY_STATUS } from '~/constants/enums'
+import { TOKEN_TYPE, USER_ROLE, USER_VERIFY_STATUS } from '~/constants/enums'
 import { signToken } from '~/utils/jwt'
 import dotenv from 'dotenv'
 import { ErrorWithStatus } from '~/models/Errors'
@@ -106,7 +106,16 @@ class UsersServices {
     }
     return user
   }
-
+  async isAdmin(user_id: string) {
+    const user = await databaseService.users.findOne({ _id: new ObjectId(user_id) })
+    if (!user) {
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.USER_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+    return user.role === USER_ROLE.Admin
+  }
   async checkEmailVerified(user_id: string) {
     const user = await databaseService.users.findOne({
       _id: new ObjectId(user_id),
