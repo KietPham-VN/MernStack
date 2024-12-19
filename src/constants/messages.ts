@@ -89,3 +89,18 @@ export const BRANDS_MESSAGES = {
   ADDRESS_LENGTH_MUST_BE_LESS_THAN_200: 'Address length must be less than 200',
   BRAND_NOT_FOUND: 'Brand not found'
 } as const
+
+export const CATEGORY_MESSAGES = {
+  CATEGORY_NAME_IS_REQUIRED: 'Category name is required',
+  CATEGORY_NAME_MUST_BE_A_STRING: 'Category name must be a string',
+  CREATE_CATEGORY_SUCCESS: 'Create category success',
+  CATEGORY_NAME_LENGTH_MUST_BE_FROM_1_TO_100: 'Category name length must be from 1 to 100',
+  GET_CATEGORIES_SUCCESS: 'Get categories success',
+  GET_CATEGORY_SUCCESS: 'Get category success',
+  UPDATE_CATEGORY_SUCCESS: 'Update category success',
+  DELETE_CATEGORY_SUCCESS: 'Delete category success',
+  CATEGORY_DESC_IS_REQUIRED: 'Category description is required',
+  CATEGORY_DESC_MUST_BE_A_STRING: 'Category description must be a string',
+  CATEGORY_DESC_LENGTH_MUST_BE_FROM_1_TO_300: 'Category description length must be from 1 to 300',
+  CATEGORY_NOT_FOUND: 'Category not found'
+} as const
