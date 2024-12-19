@@ -9,10 +9,16 @@ import { validate } from '~/utils/validation'
 import { Request } from 'express'
 import dotenv from 'dotenv'
 import { REGEX_USERNAME } from '~/constants/regex'
-import { nameSchema, passwordSchema, confirmPasswordSchema, forgotPasswordTokenSchema, dateOfBirthSchema, imageSchema } from '~/models/schemas/Param.schema'
+import {
+  nameSchema,
+  passwordSchema,
+  confirmPasswordSchema,
+  forgotPasswordTokenSchema,
+  dateOfBirthSchema,
+  imageSchema
+} from '~/models/schemas/Param.schema'
 
 dotenv.config()
-
 
 export const registerValidator = validate(
   checkSchema(
@@ -73,17 +79,15 @@ export const accessTokenValidator = validate(
         },
         custom: {
           options: async (value, { req }) => {
-            // value này là Authorization: Bearer<access_token>
             const accessToken = value.split(' ')[1]
 
             if (!accessToken) {
               throw new ErrorWithStatus({
-                status: HTTP_STATUS.UNAUTHORIZED, // 401
+                status: HTTP_STATUS.UNAUTHORIZED,
                 message: USERS_MESSAGES.ACCESS_TOKEN_IS_REQUIRED
               })
             }
             try {
-              // nếu có ac thì mình sẽ đi xác thực(check chữ ký)
               const decode_authorization = await verifyToken({
                 token: accessToken,
                 privateKey: process.env.JWT_SECRET_ACCESS_TOKEN as string
@@ -92,11 +96,10 @@ export const accessTokenValidator = validate(
               ;(req as Request).decode_authorization = decode_authorization
             } catch (error) {
               throw new ErrorWithStatus({
-                status: HTTP_STATUS.UNAUTHORIZED, // 401
+                status: HTTP_STATUS.UNAUTHORIZED,
                 message: capitalize((error as JsonWebTokenError).message)
               })
             }
-            // nếu ok hết
             return true
           }
         }
@@ -115,7 +118,6 @@ export const refreshTokenValidator = validate(
         },
         custom: {
           options: async (value, { req }) => {
-            // value này là refresh_token
             try {
               const decode_refresh_token = await verifyToken({
                 token: value,
@@ -124,7 +126,7 @@ export const refreshTokenValidator = validate(
               ;(req as Request).decode_refresh_token = decode_refresh_token
             } catch (error) {
               throw new ErrorWithStatus({
-                status: HTTP_STATUS.UNAUTHORIZED, // 401
+                status: HTTP_STATUS.UNAUTHORIZED,
                 message: capitalize((error as JsonWebTokenError).message)
               })
             }
@@ -147,17 +149,15 @@ export const emailVerifyTokenValidator = validate(
         },
         custom: {
           options: async (value, { req }) => {
-            // value là email_verify_token
             try {
               const decode_email_verify_token = await verifyToken({
                 token: value,
                 privateKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string
               })
-              // nếu mã hóa thành công thì lưu vào req
               ;(req as Request).decode_email_verify_token = decode_email_verify_token
             } catch (error) {
               throw new ErrorWithStatus({
-                status: HTTP_STATUS.UNAUTHORIZED, // 401
+                status: HTTP_STATUS.UNAUTHORIZED,
                 message: capitalize((error as JsonWebTokenError).message)
               })
             }
@@ -204,29 +204,29 @@ export const updateMeValidator = validate(
   checkSchema(
     {
       name: {
-        optional: true, // đc phép có hoặc k
-        ...nameSchema, // phân rã nameSchema ra
-        notEmpty: undefined // ghi đè lên notEmpty của nameSchema
+        optional: true,
+        ...nameSchema,
+        notEmpty: undefined
       },
 
       date_of_birth: {
-        optional: true, //đc phép có hoặc k
-        ...dateOfBirthSchema, //phân rã nameSchema ra
-        notEmpty: undefined //ghi đè lên notEmpty của nameSchema
+        optional: true,
+        ...dateOfBirthSchema,
+        notEmpty: undefined
       },
 
       bio: {
         optional: true,
         isString: {
-          errorMessage: USERS_MESSAGES.BIO_MUST_BE_A_STRING ////messages.ts thêm BIO_MUST_BE_A_STRING: 'Bio must be a string'
+          errorMessage: USERS_MESSAGES.BIO_MUST_BE_A_STRING
         },
-        trim: true, //trim phát đặt cuối, nếu k thì nó sẽ lỗi validatior
+        trim: true,
         isLength: {
           options: {
             min: 1,
             max: 200
           },
-          errorMessage: USERS_MESSAGES.BIO_LENGTH_MUST_BE_LESS_THAN_200 //messages.ts thêm BIO_LENGTH_MUST_BE_LESS_THAN_200: 'Bio length must be less than 200'
+          errorMessage: USERS_MESSAGES.BIO_LENGTH_MUST_BE_LESS_THAN_200
         }
       },
 
@@ -234,7 +234,7 @@ export const updateMeValidator = validate(
       location: {
         optional: true,
         isString: {
-          errorMessage: USERS_MESSAGES.LOCATION_MUST_BE_A_STRING ////messages.ts thêm LOCATION_MUST_BE_A_STRING: 'Location must be a string'
+          errorMessage: USERS_MESSAGES.LOCATION_MUST_BE_A_STRING
         },
         trim: true,
         isLength: {
@@ -242,15 +242,14 @@ export const updateMeValidator = validate(
             min: 1,
             max: 200
           },
-          errorMessage: USERS_MESSAGES.LOCATION_LENGTH_MUST_BE_LESS_THAN_200 //messages.ts thêm LOCATION_LENGTH_MUST_BE_LESS_THAN_200: 'Location length must be less than 200'
+          errorMessage: USERS_MESSAGES.LOCATION_LENGTH_MUST_BE_LESS_THAN_200
         }
       },
 
-      //giống location
       website: {
         optional: true,
         isString: {
-          errorMessage: USERS_MESSAGES.WEBSITE_MUST_BE_A_STRING ////messages.ts thêm WEBSITE_MUST_BE_A_STRING: 'Website must be a string'
+          errorMessage: USERS_MESSAGES.WEBSITE_MUST_BE_A_STRING
         },
         trim: true,
         isLength: {
@@ -258,14 +257,14 @@ export const updateMeValidator = validate(
             min: 1,
             max: 200
           },
-          errorMessage: USERS_MESSAGES.WEBSITE_LENGTH_MUST_BE_LESS_THAN_200 //messages.ts thêm WEBSITE_LENGTH_MUST_BE_LESS_THAN_200: 'Website length must be less than 200'
+          errorMessage: USERS_MESSAGES.WEBSITE_LENGTH_MUST_BE_LESS_THAN_200
         }
       },
 
       username: {
         optional: true,
         isString: {
-          errorMessage: USERS_MESSAGES.USERNAME_MUST_BE_A_STRING ////messages.ts thêm USERNAME_MUST_BE_A_STRING: 'Username must be a string'
+          errorMessage: USERS_MESSAGES.USERNAME_MUST_BE_A_STRING
         },
         trim: true,
         isLength: {
@@ -273,7 +272,7 @@ export const updateMeValidator = validate(
             min: 1,
             max: 50
           },
-          errorMessage: USERS_MESSAGES.USERNAME_LENGTH_MUST_BE_LESS_THAN_50 //messages.ts thêm USERNAME_LENGTH_MUST_BE_LESS_THAN_50: 'Username length must be less than 50'
+          errorMessage: USERS_MESSAGES.USERNAME_LENGTH_MUST_BE_LESS_THAN_50
         },
         custom: {
           options: (value: string, { req }) => {

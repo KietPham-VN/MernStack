@@ -11,7 +11,6 @@ import { CreateBrandReqBody, GetBrandReqParams } from '~/models/requests/brand.r
 export const createBrandController = async (req: Request<ParamsDictionary, any, CreateBrandReqBody>, res: Response) => {
   const { user_id } = req.decode_authorization as TokenPayload
 
-  // kiểm tra xem người dùng có phải admin không ?
   const isAdmin = await usersService.isAdmin(user_id)
   if (!isAdmin) {
     throw new ErrorWithStatus({

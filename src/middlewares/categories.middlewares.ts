@@ -2,7 +2,6 @@ import { checkSchema, ParamSchema } from 'express-validator'
 import { CATEGORY_MESSAGES } from '~/constants/messages'
 import { validate } from '~/utils/validation'
 
-//tạo  ParamSchema để tái sử dụng lại khi cần
 const nameCategorySchema: ParamSchema = {
   notEmpty: {
     errorMessage: CATEGORY_MESSAGES.CATEGORY_NAME_IS_REQUIRED
@@ -20,7 +19,6 @@ const nameCategorySchema: ParamSchema = {
   }
 }
 
-//kiểm tra các thông tin khi muốn tạo mới 1 CATEGORY
 export const createCategoryValidator = validate(
   checkSchema({
     name: nameCategorySchema,

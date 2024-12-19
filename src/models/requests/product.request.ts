@@ -7,13 +7,13 @@ export interface CreateProductReqBody {
   price: number
   description: string
   brand_id: string
-  origin: string //xuất xứ
-  volume: number // dung tích
-  weight: number // khối lượng
+  origin: string 
+  volume: number 
+  weight: number 
   width: number
   height: number
-  category_id: string //mã chủng loại
-  ship_category_id: string //chủng loại để đặt đơn bên ghn
+  category_id: string 
+  ship_category_id: string 
   medias: Media[]
 }
 
@@ -22,6 +22,6 @@ export interface GetProductByIdReqParams extends ParamsDictionary {
 }
 
 export interface GetAllProductReqQuery {
-  page: string //vì từ client gữi lên là string
+  page: string 
   limit: string
 }

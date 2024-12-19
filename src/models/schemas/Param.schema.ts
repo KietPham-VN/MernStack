@@ -7,7 +7,6 @@ import { ErrorWithStatus } from '~/models/Errors'
 import { verifyToken } from '~/utils/jwt'
 import { Request } from 'express'
 
-// PARAMS SCHEMA
 export const passwordSchema: ParamSchema = {
   notEmpty: {
     errorMessage: USERS_MESSAGES.PASSWORD_IS_REQUIRED
@@ -30,7 +29,6 @@ export const passwordSchema: ParamSchema = {
       minUppercase: 1,
       minNumbers: 1,
       minSymbols: 1
-      //returnScore: true
     },
     errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_STRONG
   }
@@ -63,7 +61,6 @@ export const confirmPasswordSchema: ParamSchema = {
   },
   custom: {
     options: (value, { req }) => {
-      // cố tình tạo 1 lỗi bất thường để test
       if (value !== req.body.password) {
         throw new Error(USERS_MESSAGES.CONFIRM_PASSWORD_MUST_BE_THE_SAME_AS_PASSWORD)
       }
@@ -86,7 +83,7 @@ export const forgotPasswordTokenSchema: ParamSchema = {
         ;(req as Request).decode_forgot_password_token = decode_forgot_password_token
       } catch (error) {
         throw new ErrorWithStatus({
-          status: HTTP_STATUS.UNAUTHORIZED, // 401
+          status: HTTP_STATUS.UNAUTHORIZED,
           message: capitalize((error as JsonWebTokenError).message)
         })
       }
@@ -103,7 +100,7 @@ export const nameSchema: ParamSchema = {
   isString: {
     errorMessage: USERS_MESSAGES.NAME_MUST_BE_A_STRING
   },
-  trim: true, //nên đặt trim dưới này thay vì ở đầu
+  trim: true,
   isLength: {
     options: {
       min: 1,
@@ -126,14 +123,14 @@ export const dateOfBirthSchema: ParamSchema = {
 export const imageSchema: ParamSchema = {
   optional: true,
   isString: {
-    errorMessage: USERS_MESSAGES.IMAGE_URL_MUST_BE_A_STRING ////messages.ts thêm IMAGE_URL_MUST_BE_A_STRING: 'Image url must be a string'
+    errorMessage: USERS_MESSAGES.IMAGE_URL_MUST_BE_A_STRING
   },
-  trim: true, //nên đặt trim dưới này thay vì ở đầu
+  trim: true,
   isLength: {
     options: {
       min: 1,
       max: 400
     },
-    errorMessage: USERS_MESSAGES.IMAGE_URL_LENGTH_MUST_BE_LESS_THAN_400 //messages.ts thêm IMAGE_URL_LENGTH_MUST_BE_LESS_THAN_400: 'Image url length must be less than 400'
+    errorMessage: USERS_MESSAGES.IMAGE_URL_LENGTH_MUST_BE_LESS_THAN_400
   }
 }

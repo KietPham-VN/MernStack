@@ -9,11 +9,8 @@ import { ErrorWithStatus } from '~/models/Errors'
 
 class ProductService {
   async createProduct(product: CreateProductReqBody) {
-    // tạo product
-    //trước tiên thì nhớ rằng product của ta sẽ không lưu media nên ta sẽ loại bỏ prop media
-    const { medias, ...productInfo } = product // tách media ra khỏi product
-    //và vì khi người dùng gữi lên thì thông tin chỉ là string nên ta phải chuyển
-    //brand_id và category_id, ship_category_id về dạng ObjectId
+    const { medias, ...productInfo } = product
+
     const result = await databaseService.Products.insertOne(
       new Product({
         ...productInfo,
@@ -23,8 +20,7 @@ class ProductService {
       })
     )
     result.insertedId
-    // lưu media vào collection ProductMedia
-    // maping các media thành dạng productMedia(có hình 13 mô tả)
+
     const mediasToSave = medias.map((media) => ({
       product_id: result.insertedId,
       media
@@ -34,12 +30,11 @@ class ProductService {
   }
 
   async getProductById(id: string) {
-    //aggregate là đoạn ta đã copy từ việc export
     await databaseService.Products.aggregate(
       [
         {
           $match: {
-            _id: new ObjectId(id) //đưa vào id  product cần tìm
+            _id: new ObjectId(id)
           }
         },
         {
@@ -93,10 +88,10 @@ class ProductService {
     const { page, limit } = query
     const result = await databaseService.Products.aggregate([
       {
-        $skip: (page - 1) * limit //cập nhật
+        $skip: (page - 1) * limit
       },
       {
-        $limit: limit // cập nhật
+        $limit: limit
       },
       {
         $lookup: {

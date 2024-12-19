@@ -6,13 +6,11 @@ import { CreateBrandReqBody } from '~/models/requests/brand.request'
 
 class BrandsService {
   async createBrand(brand: CreateBrandReqBody) {
-    // tạo brand
     const result = await databaseService.Brands.insertOne(brand)
     return result
   }
 
   async getBrandById(id: string) {
-    // lấy brand theo id
     const result = await databaseService.Brands.findOne({ _id: new ObjectId(id) })
     if (!result) {
       throw new ErrorWithStatus({

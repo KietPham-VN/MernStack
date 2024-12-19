@@ -12,12 +12,9 @@ class MediasServices {
     const result = await Promise.all(
       files.map(async (file) => {
         const newFilename = getNameFromFileName(file.newFilename) + '.jpg'
-        // đường dẫn đến file mới sẽ là
         const newPath = UPLOAD_IMAGE_DIR + '/' + newFilename
-        // dùng sharp để nén ảnh
         await sharp(file.filepath).jpeg().toFile(newPath)
-        // setup đường link
-        fs.unlinkSync(file.filepath) // xóa bức hình cũ
+        fs.unlinkSync(file.filepath)
         const url: Media = {
           url: `http://localhost:3000/static/image/${newFilename}`,
           type: MEDIA_TYPE.Image

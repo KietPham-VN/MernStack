@@ -41,12 +41,12 @@ export interface ResetPasswordReqBody {
 export interface UpdateMeReqBody {
   name?: string
   date_of_birth?: string
-  bio?: string // optional
-  location?: string // optional
-  website?: string // optional
-  username?: string // optional
-  avatar?: string // optional
-  cover_photo?: string // optional}
+  bio?: string
+  location?: string
+  website?: string
+  username?: string
+  avatar?: string
+  cover_photo?: string
 }
 
 export interface ChangePasswordReqBody {

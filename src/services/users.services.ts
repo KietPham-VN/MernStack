@@ -72,7 +72,6 @@ class UsersServices {
     user_id: string //
     email_verify_token: string
   }) {
-    // tìm bằng cả user_id và email_verify_token
     const user = await databaseService.users.findOne({
       _id: new ObjectId(user_id),
       email_verify_token
@@ -97,7 +96,6 @@ class UsersServices {
       _id: new ObjectId(user_id),
       forgot_password_token
     })
-    // với 2 thông tin mà không có user thì
     if (!user) {
       throw new ErrorWithStatus({
         status: HTTP_STATUS.UNAUTHORIZED, // 404
@@ -175,7 +173,6 @@ class UsersServices {
   }
 
   async login({ email, password }: LoginReqBody) {
-    // dung email và pass để tìm user
     const user = await databaseService.users.findOne({
       email,
       password: hashPassword(password)
@@ -187,13 +184,11 @@ class UsersServices {
       })
     }
 
-    // nếu có thì tạo ac và rf cho nó
     const user_id = user._id.toString()
     const [access_token, refresh_token] = await Promise.all([
       this.signAccessToken(user_id),
       this.signRefreshToken(user_id)
     ])
-    // lưu rf vào database
     await databaseService.refresh_tokens.insertOne(
       new RefreshToken({
         user_id: new ObjectId(user_id),
@@ -211,7 +206,6 @@ class UsersServices {
   }
 
   async verifyEmail(user_id: string) {
-    // dùng user_id tìm và cập nhật
     await databaseService.users.updateOne(
       { _id: new ObjectId(user_id) }, //
       [
@@ -224,12 +218,10 @@ class UsersServices {
         }
       ]
     )
-    // tạo at và rf
     const [access_token, refresh_token] = await Promise.all([
       this.signAccessToken(user_id),
       this.signRefreshToken(user_id)
     ])
-    // lưu rf vào database
     await databaseService.refresh_tokens.insertOne(
       new RefreshToken({
         user_id: new ObjectId(user_id),
@@ -302,14 +294,13 @@ class UsersServices {
       { _id: new ObjectId(user_id) },
       {
         projection: {
-          //cái nào muốn giấu đi thì để số 0 vào
           password: 0,
           email_verify_token: 0,
           forgot_password_token: 0
         }
       }
     )
-    return userInfor // sẽ k có những thuộc tính nêu trên, tránh bị lộ thông tin
+    return userInfor
   }
 
   async updateMe({
@@ -318,14 +309,9 @@ class UsersServices {
   }: {
     user_id: string //
     payload: UpdateMeReqBody
-    // payload là những gì người dùng muốn update
   }) {
-    //trong payload có 2 trường dữ liệu cần phải xử lý
-    // date_of_birth
     const _payload = payload.date_of_birth ? { ...payload, date_of_birth: new Date(payload.date_of_birth) } : payload
-    //username
     if (_payload.username) {
-      //nếu có thì tìm xem có ai giống không
       const user = await databaseService.users.findOne({ username: _payload.username })
       if (user) {
         throw new ErrorWithStatus({
@@ -334,13 +320,12 @@ class UsersServices {
         })
       }
     }
-    //nếu username truyền lên mà không có người dùng thì tiến hành cập nhật
     const userInfor = await databaseService.users.findOneAndUpdate(
       { _id: new ObjectId(user_id) }, //
       [
         {
           $set: {
-            ..._payload, // cái mà người dùng muốn cập nhật nằm trong này nè
+            ..._payload,
             updated_at: '$$NOW'
           }
         }
@@ -366,19 +351,16 @@ class UsersServices {
     old_password: string
     password: string
   }) {
-    // tìm user cái đã
     const user = await databaseService.users.findOne({
       _id: new ObjectId(user_id), //
       password: hashPassword(old_password)
     })
-    // nếu tìm không ra thì tk này không phải chủ account
     if (!user) {
       throw new ErrorWithStatus({
         status: HTTP_STATUS.NOT_FOUND,
         message: USERS_MESSAGES.USER_NOT_FOUND
       })
     }
-    // cập nhật
     await databaseService.users.updateOne(
       { _id: new ObjectId(user_id) }, //
       [
@@ -405,18 +387,15 @@ class UsersServices {
 
     const [access_token, new_refresh_token] = await Promise.all([
       this.signAccessToken(user_id),
-      this.signRefreshToken(user_id, `${remainingTime}s`) // dùng thời gian còn lại
+      this.signRefreshToken(user_id, `${remainingTime}s`)
     ])
-    // lưu rf mới vào database
     await databaseService.refresh_tokens.insertOne(
       new RefreshToken({
         token: new_refresh_token,
         user_id: new ObjectId(user_id)
       })
     )
-    // xóa rf cũ ra khỏi database
     await databaseService.refresh_tokens.deleteOne({ token: refresh_token })
-    // gửi cặp mã mới cho người dùng
     return {
       access_token,
       refresh_token: new_refresh_token

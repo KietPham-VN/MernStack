@@ -1,4 +1,3 @@
-// file này lưu hàm wrapAsync nhận vào những cái nào cần try catch next
 
 import { NextFunction, Request, RequestHandler, Response } from 'express'
 

@@ -12,7 +12,6 @@ export const createCategoryController = async (
   req: Request<ParamsDictionary, any, CreateCategoryReqBody>,
   res: Response
 ) => {
-  //kiểm tra xem người dùng có phải admin không ?
   const { user_id } = req.decode_authorization as TokenPayload
   const isAdmin = await usersService.isAdmin(user_id)
   if (!isAdmin) {

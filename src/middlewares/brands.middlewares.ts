@@ -3,7 +3,6 @@ import { BRANDS_MESSAGES } from '~/constants/messages'
 import { REGEX_PHONE_NUMBER } from '~/constants/regex'
 import { validate } from '~/utils/validation'
 
-//tạo  ParamSchema để tái sử dụng lại khi cần
 const nameBrandSchema: ParamSchema = {
   notEmpty: {
     errorMessage: BRANDS_MESSAGES.BRAND_NAME_IS_REQUIRED
@@ -60,7 +59,6 @@ export const addressSchema: ParamSchema = {
   trim: true
 }
 
-//kiểm tra các thông tin khi muốn tạo mới 1 brand
 export const createBrandValidator = validate(
   checkSchema({
     name: nameBrandSchema,
