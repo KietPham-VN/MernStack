@@ -5,6 +5,7 @@ import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import Brand from '~/models/schemas/Brand.schma'
 import Category from '~/models/schemas/Category.schema'
 import Product from '~/models/schemas/Product.schema'
+import ProductMedia from '~/models/schemas/ProductMedia.schema'
 
 dotenv.config()
 
@@ -28,6 +29,12 @@ class DatabaseService {
       throw error
     }
   }
+  async indexProducts() {
+    const exists = await this.Products.indexExists(['content_text'])
+    if (!exists) {
+      this.Products.createIndex({ content: 'text' }, { default_language: 'none' })
+    }
+  }
 
   get users(): Collection<User> {
     return this.db.collection(process.env.DB_USERS_COLLECTION as string)
@@ -45,6 +52,9 @@ class DatabaseService {
   }
   get Products(): Collection<Product> {
     return this.db.collection(process.env.DB_PRODUCTS_COLLECTION as string)
+  }
+  get ProductMedia(): Collection<ProductMedia> {
+    return this.db.collection(process.env.DB_PRODUCT_MEDIA_COLLECTION as string)
   }
 }
 
