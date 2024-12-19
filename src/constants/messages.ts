@@ -86,5 +86,6 @@ export const BRANDS_MESSAGES = {
   HOTLINE_IS_INVALID: 'Hotline is invalid',
   ADDRESS_IS_REQUIRED: 'Address is required',
   ADDRESS_MUST_BE_A_STRING: 'Address must be a string',
-  ADDRESS_LENGTH_MUST_BE_LESS_THAN_200: 'Address length must be less than 200'
+  ADDRESS_LENGTH_MUST_BE_LESS_THAN_200: 'Address length must be less than 200',
+  BRAND_NOT_FOUND: 'Brand not found'
 } as const
