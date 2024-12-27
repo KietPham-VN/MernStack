@@ -24,7 +24,6 @@ export const signToken = ({
   })
 }
 
-
 export const verifyToken = async ({ token, privateKey }: { token: string; privateKey: string }) => {
   return new Promise<TokenPayload>((resolve, reject) => {
     jwt.verify(token, privateKey, (error, decode) => {

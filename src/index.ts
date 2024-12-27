@@ -12,7 +12,9 @@ const app = express()
 const PORT = 3000
 
 databaseService.connect()
+
 initFolder()
+
 app.use(express.json())
 app.use('/users', userRouter)
 app.use('/medias', mediaRouter)
@@ -20,6 +22,7 @@ app.use('/static', staticRouter)
 app.use('/brands', brandsRouter)
 app.use('/categories', categoriesRouter)
 app.use(defaultErrorHandler)
+
 app.listen(PORT, () => {
   console.log(`server backend is currently listening at PORT ${PORT}`)
 })

@@ -199,7 +199,6 @@ export const createProductValidator = validate(
         },
         custom: {
           options: (value) => {
-            //lấy mảng các key của MediaType(enum)
             const MediaTypeArray = Object.keys(MEDIA_TYPE).filter((key) => !isNaN(Number(key)))
             if (
               value.some((item: any) => {

@@ -1,4 +1,3 @@
-
 import { NextFunction, Request, RequestHandler, Response } from 'express'
 
 export const wrapAsync = <P, T>(func: RequestHandler<P, any, any, T>) => {

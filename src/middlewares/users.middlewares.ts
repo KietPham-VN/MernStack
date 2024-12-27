@@ -230,7 +230,6 @@ export const updateMeValidator = validate(
         }
       },
 
-      //giống bio
       location: {
         optional: true,
         isString: {

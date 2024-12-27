@@ -33,7 +33,6 @@ export default class User {
   email_verify_token: string
   forgot_password_token: string
   verify: USER_VERIFY_STATUS
-
   bio: string
   location: string
   website: string

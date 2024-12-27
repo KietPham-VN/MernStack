@@ -92,7 +92,6 @@ export const forgotPasswordTokenSchema: ParamSchema = {
   }
 }
 
-//tạo 2 ParamSchema
 export const nameSchema: ParamSchema = {
   notEmpty: {
     errorMessage: USERS_MESSAGES.NAME_IS_REQUIRED

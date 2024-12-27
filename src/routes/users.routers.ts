@@ -67,7 +67,6 @@ userRouter.post(
 
 userRouter.patch(
   '/me',
-  // cần 1 cái hàm để sàn lọc req.body
   filterMiddleware<UpdateMeReqBody>([
     'name',
     'date_of_birth',

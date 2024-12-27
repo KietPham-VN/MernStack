@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb'
 
 interface BrandType {
-  _id?: ObjectId //option
+  _id?: ObjectId 
   name: string
   hotline: string
   address: string
